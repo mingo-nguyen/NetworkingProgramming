@@ -1,0 +1,14 @@
+﻿<Window x:Class="NetworkingProgramming.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="MainWindow" Height="350" Width="525">
+    <Grid>
+        <StackPanel Margin="10">
+            <TextBox Name="OrderIdTextBox" Text="Order ID" Margin="0,0,0,10" Foreground="Gray" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText"/>
+            <TextBox Name="FoodListTextBox" Text="Food List" Margin="0,0,0,10" Foreground="Gray" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText"/>
+            <TextBox Name="DeliveryAddressTextBox" Text="Delivery Address" Margin="0,0,0,10" Foreground="Gray" GotFocus="RemovePlaceholderText" LostFocus="AddPlaceholderText"/>
+            <Button Content="Send Order" Click="SendOrderButton_Click" HorizontalAlignment="Center"/>
+            <TextBox Name="ResponseTextBox" Margin="10,10,0,0" IsReadOnly="True" TextWrapping="Wrap" VerticalScrollBarVisibility="Auto"/>
+        </StackPanel>
+    </Grid>
+</Window>
