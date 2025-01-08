@@ -9,12 +9,14 @@ namespace NetworkingProgramming
     public class TcpOrderServer
     {
         private TcpListener _listener;
+        private UdpOrderBroadcaster _udpOrderBroadcaster;
 
         public event EventHandler<string> OrderReceived;
 
-        public TcpOrderServer(string ipAddress, int port)
+        public TcpOrderServer(string ipAddress, int port, UdpOrderBroadcaster udpOrderBroadcaster)
         {
             _listener = new TcpListener(IPAddress.Parse(ipAddress), port);
+            _udpOrderBroadcaster = udpOrderBroadcaster;
         }
 
         public async Task StartAsync()
@@ -54,3 +56,4 @@ namespace NetworkingProgramming
         }
     }
 }
+

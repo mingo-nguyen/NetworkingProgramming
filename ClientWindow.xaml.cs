@@ -1,4 +1,8 @@
 ﻿using System;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -8,28 +12,30 @@ namespace NetworkingProgramming
     public partial class MainWindow : Window
     {
         private readonly TcpOrderClient _tcpOrderClient;
-        private readonly UdpOrderBroadcaster _udpOrderBroadcaster;
+        private static int _orderCounter = 1;
+        private UdpClient _udpClient;
 
         public MainWindow()
         {
             InitializeComponent();
             _tcpOrderClient = new TcpOrderClient("127.0.0.1", 5000);
-            _udpOrderBroadcaster = new UdpOrderBroadcaster("255.255.255.255", 6000);
+            StartUdpListener();
         }
 
         private async void SendOrderButton_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                string orderData = $"OrderID: {OrderIdTextBox.Text}, FoodList: {FoodListTextBox.Text}, DeliveryAddress: {DeliveryAddressTextBox.Text}";
+                string orderId = _orderCounter.ToString("D5");
+                string orderData = $"OrderID: {orderId}, FoodList: {FoodListTextBox.Text}, DeliveryAddress: {DeliveryAddressTextBox.Text}";
                 string response = await _tcpOrderClient.SendOrderAsync(orderData);
-                await _udpOrderBroadcaster.BroadcastNewOrderAsync("New Order Placed: " + orderData);
-                ResponseTextBox.Text = response;
+                ResponseTextBox.AppendText($"OrderID: {orderId} - {response}" + Environment.NewLine);
+                _orderCounter++;
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error sending order: {ex.Message}");
-                ResponseTextBox.Text = $"Error: {ex.Message}";
+                ResponseTextBox.AppendText($"Error: {ex.Message}" + Environment.NewLine);
             }
         }
 
@@ -55,6 +61,20 @@ namespace NetworkingProgramming
                     _ => textBox.Text
                 };
             }
+        }
+
+        private void StartUdpListener()
+        {
+            _udpClient = new UdpClient(6000);
+            Task.Run(async () =>
+            {
+                while (true)
+                {
+                    var result = await _udpClient.ReceiveAsync();
+                    string message = Encoding.UTF8.GetString(result.Buffer);
+                    Dispatcher.Invoke(() => NotificationTextBox.AppendText(message + Environment.NewLine));
+                }
+            });
         }
     }
 }
